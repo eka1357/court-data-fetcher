@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Case Result</title>
+    <style>
+      table { border-collapse: collapse; margin-top: 10px; }
+      th, td { border: 1px solid #ccc; padding: 8px 12px; }
+      th { background-color: #f4f4f4; }
+      .error { color: red; font-weight: bold; }
+      .container { max-width: 800px; margin: auto; font-family: Arial, sans-serif; }
+      h2 { color: #333; }
+    </style>
+  </head>
+  <body>
+    <div class=\"container\">
+      <h2>Case Result for CNR: {{ cnr_number }}</h2>
+
+      {% if case.status == \"Fetched\" %}
+        <h3>📄 Parsed Case Details</h3>
+        <table>
+          <tr><th>Parties</th><td>{{ case.parsed.parties or \"Not found\" }}</td></tr>
+          <tr><th>Filing Date</th><td>{{ case.parsed.filing_date or \"Not found\" }}</td></tr>
+          <tr><th>Next Hearing Date</th><td>{{ case.parsed.next_hearing_date or \"Not found\" }}</td></tr>
+          <tr><th>Orders / Judgments</th>
+            <td>
+              {% if case.parsed.orders %}
+                <ul>
+                  {% for order in case.parsed.orders %}
+                    <li><a href=\"{{ order.link }}\" target=\"_blank\">{{ order.title }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                Not found
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+
+        <br>
+        <h3>🛠 Raw HTML (debug)</h3>
+        <p><strong>Length:</strong> {{ case.html|length }} characters</p>
+        <div style=\"border: 1px solid #ccc; padding: 10px; overflow-x: auto; max-height: 400px;\">
+          {{ case.html|safe }}
+        </div>
+      {% else %}
+        <p class=\"error\"><strong>Error:</strong> {{ case.error }}</p>
+      {% endif %}
+      <br />
+      <a href=\"/\">🔙 Search another case</a>
+    </div>
+  </body>
+</html>
